@@ -1,0 +1,178 @@
+{% extends 'blank.html' %}
+{% load static %}
+
+{% block styles %}
+<link href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" rel="stylesheet">
+<style>
+    .resaltar-rojo {
+        background-color: #b93636;
+        font-weight: bold;
+        color: black;
+    }
+
+    #tabla-miembros tbody tr:hover {
+        cursor: pointer;
+        background-color: #adadad;
+        font-weight: bold;
+        color: black;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col">
+
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Miembros</h6>
+
+                <div class="dropdown no-arrow">
+                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                        aria-labelledby="dropdownMenuLink">
+                        <a class="dropdown-item" href="/Members/Refresh">Actualizar Miembros</a>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col">
+
+                        <table id="tabla-miembros" class="table table-bordered">
+
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div id="editar-miembro" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Editar miembro</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="/Members/Edit/Cel_Comment" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="tag" id="tag-editar-miembro-hidden">
+
+                <div class="modal-body">
+
+                    <div class="container-fluid">
+
+                        <div class="row">
+                            <div class="col">
+                                <b>tag</b>
+                                <p id="tag-editar-miembro"></p>
+                            </div>
+                            <div class="col">
+                                <b>Nombre</b>
+                                <p id="name-editar-miembro"></p>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    <label for="cel-editar-miembro">Celular</label>
+                                    <input type="text" class="form-control" id="cel-editar-miembro" name="cel">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    <label for="comments-editar-miembro">Comentarios</label>
+                                    <textarea class="form-control" id="comments-editar-miembro" name="comments" rows="5"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-success">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+
+{{ members|json_script:"members-tag" }}
+
+<script>
+    var members = undefined
+    var modal_editar_miembro = $('#editar-miembro');
+
+    window.onload = function () {
+        members = JSON.parse(document.getElementById('members-tag').textContent);
+
+        let table = $('#tabla-miembros').DataTable({
+            data: members,
+            columns: [
+                {
+                    title: 'Tag',
+                    data: 'tag',
+                },
+                {
+                    title: 'Nombre',
+                    data: 'name',
+                },
+                {
+                    title: 'Celular',
+                    data: 'cel',
+                },
+                {
+                    title: 'Rango',
+                    data: 'role',
+                },
+            ],
+            fnRowCallback: (nRow, aData, iDisplayIndex, iDisplayIndexFull) => {
+                if (aData.cel == null) {
+                    nRow.children[2].classList.add('resaltar-rojo');
+                }
+
+                nRow.setAttribute('onclick', `cargar_modal_editarMiembro("${aData.tag}")`);
+            }
+        });
+
+    }
+
+    function cargar_modal_editarMiembro(tag) {
+        let member = members.find(member => member.tag == tag);
+
+        document.getElementById('tag-editar-miembro-hidden').value = member.tag;
+        document.getElementById('tag-editar-miembro').innerHTML = member.tag;
+        document.getElementById('name-editar-miembro').innerHTML = member.name;
+        document.getElementById('cel-editar-miembro').value = member.cel == "None" ? "" : member.cel;
+        document.getElementById('comments-editar-miembro').value = member.comments;
+
+        modal_editar_miembro.modal("show");
+    }
+
+    ActiveItems_Menu("Miembros-activos");
+</script>
+
+{% endblock %}

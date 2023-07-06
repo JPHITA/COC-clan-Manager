@@ -1,0 +1,183 @@
+{% extends 'blank.html' %}
+{% load static %}
+
+
+{% block content %}
+
+<div class="row">
+    <div class="col">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Historico de miembros</h6>
+            </div>
+            <div class="card-body">
+
+                <div class="row justify-content-between">
+                    <div class="col-6">
+
+                        <div class="form-group row">
+                            <!-- <label class="col-sm-2 col-form-label" for="tag-buscar">Tag</label> -->
+                            <div class="col-sm-6">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text">Tag</div>
+                                    </div>
+                                    <input type="text" class="form-control" id="tag-buscar" name="tag" onkeypress="BuscarHistorico_enter(event)">
+                                </div>
+                            </div>
+
+                            <div class="col-3">
+                                <button class="btn btn-primary" style="margin-bottom: 1rem;"
+                                    onclick="BuscarHistorico()">Buscar</button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="col-2 d-flex align-items-center">
+                        <button class="btn btn-success" style="margin-bottom: 1rem;" onclick="guardar_cambios()">Guardar cambios</button>
+                    </div>
+                </div>
+
+                <div class="row">
+
+                    <div class="col-3">
+                        <h4>Tag</h4>
+                        <p id="tag"></p>
+                    </div>
+                    <div class="col-3">
+                        <h4>Clan</h4>
+                        <p id="clan"></p>
+                    </div>
+                    <div class="col-3">
+                        <h4>Nombre</h4>
+                        <p id="name"></p>
+                    </div>
+                    <div class="col-3">
+                        <h4>Rango</h4>
+                        <p id="role"></p>
+                    </div>
+
+                </div>
+
+                <div class="row">
+
+                    <div class="col-3">
+                        <h4>Miembro</h4>
+                        <p id="current_member"></p>
+                    </div>
+                    <div class="col-3">
+                        <h4>F. creacion</h4>
+                        <p id="date_created"></p>
+                    </div>
+                    <div class="col-3">
+                        <h4>F. mod</h4>
+                        <p id="date_updated"></p>
+                    </div>
+                    <div class="col-3">
+                        <h4>Celular</h4>
+                        <input id="cel" type="text" style="width: 70%;">
+                    </div>
+
+                </div>
+
+                <div class="row justify-content-center">
+                    <div class="col-6">
+                        <h4>Comentarios</h4>
+                        <textarea id="comments" class="form-control" rows="5" style="width: 100%;"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script>
+    ActiveItems_Menu("Miembros-historico");
+
+    function BuscarHistorico() {
+        let tag = document.getElementById("tag-buscar").value;
+
+        if (tag == "") {
+            alert("Debe ingresar un tag");
+            return;
+        }
+
+        let form = new FormData();
+        form.append("tag", tag);
+        form.append("csrfmiddlewaretoken", "{{ csrf_token }}");
+
+        fetch("/Members/History/Get", {
+            method: 'POST',
+            headers: {
+                // "Accept": "application/json",
+                // 'Content-Type':'application/json', 
+                'X-CSRFToken': '{{csrf_token}}',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: form,
+        }).then((response) => {
+            response.json().then(data => {
+                if (data.status == "ok") {
+
+                    for (const key in data.member) {
+                        let elem = document.getElementById(key);
+                        if (elem.nodeName == "P") {
+                            elem.innerHTML = data.member[key];
+                        } else {
+                            elem.value = data.member[key];
+                        }
+
+                    }
+
+                } else {
+                    alert("No se encontro al jugador");
+                }
+            })
+        })
+    }
+
+    function BuscarHistorico_enter(e) {
+        var key = e.keyCode || e.which;
+        if (key == 13) {
+            BuscarHistorico();
+        }
+    }
+
+    function guardar_cambios(){
+        let tag = document.getElementById("tag").innerHTML;
+        let cel = document.getElementById("cel").value;
+        let comments = document.getElementById("comments").value;
+
+        let form = new FormData();
+        form.append("tag", tag);
+        form.append("cel", cel);
+        form.append("comments", comments);
+        form.append("csrfmiddlewaretoken", "{{ csrf_token }}");
+
+        fetch("/Members/History/SaveChanges", {
+            method: 'POST',
+            headers: {
+                // "Accept": "application/json",
+                // 'Content-Type':'application/json', 
+                'X-CSRFToken': '{{csrf_token}}',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: form
+        }).then(res => {
+            res.json().then(data => {
+                if (data.status == "ok") {
+                    alert("Cambios guardados");
+                } else {
+                    alert("Error al guardar los cambios");
+                }
+            })
+        })
+    }
+</script>
+
+{% endblock %}

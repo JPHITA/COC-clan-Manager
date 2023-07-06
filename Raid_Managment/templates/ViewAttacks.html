@@ -1,0 +1,86 @@
+{% extends 'blank.html' %}
+
+{% block styles %}
+<link href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" rel="stylesheet">
+{% endblock %}
+
+
+{% block content %}
+
+<div class="card shadow mb-4">
+    <!-- Card Header - Dropdown -->
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <h6 class="m-0 font-weight-bold text-primary">Dropdown Card Example</h6>
+        <div class="dropdown no-arrow">
+            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+                <div class="dropdown-header">Dropdown Header:</div>
+                <a class="dropdown-item" href="#">Action</a>
+                <a class="dropdown-item" href="#">Another action</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#">Something else here</a>
+            </div>
+        </div>
+    </div>
+    <!-- Card Body -->
+    <div class="card-body">
+        <div class="row">
+            <div class="col">
+
+                <table id="tabla-raid-attacks" class="table table-bordered">
+
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+
+
+{% block scripts %}
+
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+
+{{raid_info|json_script:"raid_info"}}
+{{raid_attacks_info|json_script:"raid_attacks_info"}}
+
+<script>
+    var raid_info = JSON.parse(document.getElementById('raid_info').textContent);
+    var raid_attacks_info = JSON.parse(document.getElementById('raid_attacks_info').textContent.replace("NaN", null));
+
+    window.onload = () => {
+        $("#tabla-raid-attacks").DataTable({
+            data: raid_attacks_info,
+            columns: [
+                {
+                    title: 'Tag',
+                    data: 'tag'
+                },
+                {
+                    title: 'Nombre',
+                    data: 'name'
+                },
+                {
+                    title: 'ataques',
+                    data: 'attacks'
+                },
+                {
+                    title: 'limite ataques',
+                    data: 'total_attack_limit'
+                },
+                {
+                    title: 'total recursos saqueados',
+                    data: 'capitalResourcesLooted'
+                }
+            ]
+        })
+    }
+</script>
+
+{% endblock %}
