@@ -32,3 +32,12 @@ class COC_API:
         res = res.json()["items"]
 
         return res
+    
+    @classmethod
+    def get_CWL_info(cls, clan_tag):
+        clan_tag = clan_tag.replace("#", "%23")
+
+        res = requests.get(f"https://api.clashofclans.com/v1/clans/{clan_tag}/currentwar/leaguegroup", headers={"Authorization": f"Bearer {cls.token}"})
+        res = res.json()
+
+        return res

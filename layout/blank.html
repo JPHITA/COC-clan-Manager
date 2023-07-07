@@ -71,21 +71,31 @@
                 </div>
             </li>
 
+            <!-- Divider -->
+            <hr class="sidebar-divider my-0">
+
+            <li class="nav-item">
+                <a id="Raids" data-active="false" class="nav-link" href="/Raid/ViewAttacks">
+                    <i class="fas fa-fw fa-clipboard"></i>
+                    <span>Raids</span>
+                </a>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider my-0">
+
             <!-- Nav Item - Utilities Collapse Menu -->
             <li class="nav-item">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
                     aria-expanded="true" aria-controls="collapseUtilities">
-                    <i class="fas fa-fw fa-wrench"></i>
-                    <span>Utilities</span>
+                    <i class="fas fa-fw fa-house-damage"></i>
+                    <span>CWL</span>
                 </a>
                 <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
                     data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Custom Utilities:</h6>
-                        <a class="collapse-item" href="#">Colors</a>
-                        <a class="collapse-item" href="#">Borders</a>
-                        <a class="collapse-item" href="#">Animations</a>
-                        <a class="collapse-item" href="#">Other</a>
+                        <a id="Resumen-clanes" class="collapse-item" href="/CWL/ClansSummary">Resumen clanes</a>
+                        <a id="Guerra-Especifica" class="collapse-item" href="/CWL/SpecificWar">Guerra Especifica</a>
                     </div>
                 </div>
             </li>
@@ -100,13 +110,12 @@
 
             <!-- Nav Item - Pages Collapse Menu -->
             <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="true"
-                    aria-controls="collapsePages">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
+                    aria-expanded="true" aria-controls="collapsePages">
                     <i class="fas fa-fw fa-folder"></i>
                     <span>Pages</span>
                 </a>
-                <div id="collapsePages" class="collapse" aria-labelledby="headingPages"
-                    data-parent="#accordionSidebar">
+                <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
                         <h6 class="collapse-header">Login Screens:</h6>
                         <a class="collapse-item" href="#">Login</a>
@@ -213,7 +222,7 @@
                         </li>
 
                         <!-- Nav Item - Messages -->
-                        
+
 
                         <div class="topbar-divider d-none d-sm-block"></div>
 
@@ -307,12 +316,12 @@
     <script src="{% static 'layout/js/sb-admin-2.min.js' %}"></script>
 
     <script>
-        function ActiveItems_Menu(id){
+        function ActiveItems_Menu(id) {
             let item = document.getElementById(id);
-            if(item.hasAttribute("data-active")){
+            if (item.hasAttribute("data-active")) {
                 item.parentElement.classList.add("active");
-                
-            }else{
+
+            } else {
                 item.classList.add('active');
 
                 item.parentElement.parentElement.classList.add('show');

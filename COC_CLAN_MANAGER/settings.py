@@ -41,6 +41,7 @@ INSTALLED_APPS = [
 
     'Members_Managment',
     'Raid_Managment',
+    'CWL_Managment',
 ]
 
 MIDDLEWARE = [

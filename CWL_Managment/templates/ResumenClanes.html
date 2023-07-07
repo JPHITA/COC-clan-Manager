@@ -1,0 +1,103 @@
+{% extends 'blank.html' %}
+
+{% block content %}
+
+<div class="card shadow mb-4">
+    <!-- Card Header - Dropdown -->
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <h6 class="m-0 font-weight-bold text-primary">Resumen Clanes CWL</h6>
+    </div>
+    <!-- Card Body -->
+    <div class="card-body" id="CWL-clans-container">
+
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+{{ CWL_clans_summary|json_script:'CWL_clans_summary' }}
+
+<script>
+    ActiveItems_Menu("Resumen-clanes")
+
+    window.onload = () => {
+        const CWL_clans_summary = JSON.parse(document.getElementById('CWL_clans_summary').textContent);
+        const CWL_clans = Object.keys(CWL_clans_summary);
+
+        //  añadir al html los graficos
+        let container = document.getElementById('CWL-clans-container');
+        let html = '';
+        for (let i = 0; i <= CWL_clans.length - 2; i += 2) {
+            html += "<div class='row'>";
+
+            CWL_clans.slice(i, i + 2).forEach((clan, j) => {
+
+                html += `
+                    <div class="col-6">
+                        <div>
+                            <canvas id="${i + j}-${clan}"></canvas>
+                        </div>
+                    </div>
+                `;
+
+            });
+            html += "</div>";
+        }
+
+        container.innerHTML = html;
+
+        //  crear los graficos
+        CWL_clans.forEach((clan, i) => {
+            let clan_th = Object.keys(CWL_clans_summary[clan]).sort((a, b) => parseInt(a) - parseInt(b));
+
+            let ctx = document.getElementById(`${i}-${clan}`);
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: clan_th,
+                    datasets: [{
+                        data: clan_th.map(key => CWL_clans_summary[clan][key]),
+                    }]
+                },
+                options: {
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: clan,
+                            font: {
+                                size: 20,
+                                bold: true,
+                            }
+                        },
+                        legend: {
+                            display: false, // hide legend
+                        },
+                        tooltip: {
+                            enabled: false, // hide tooltips
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: "Ayuntamiento",
+                                font: {
+                                    size: 16,
+                                    bold: false,
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    }
+
+</script>
+
+
+{% endblock %}

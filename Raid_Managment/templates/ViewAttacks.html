@@ -17,11 +17,8 @@
                 <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
             </a>
             <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
-                <div class="dropdown-header">Dropdown Header:</div>
-                <a class="dropdown-item" href="#">Action</a>
-                <a class="dropdown-item" href="#">Another action</a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#">Something else here</a>
+                <a class="dropdown-item" href="/Raid/RefreshRaidInfo">Refrescar Raid</a>
+                <a class="dropdown-item" href="#" onclick="AtaquesFaltantes()">Ataques faltantes</a>
             </div>
         </div>
     </div>
@@ -51,6 +48,8 @@
 {{raid_attacks_info|json_script:"raid_attacks_info"}}
 
 <script>
+    ActiveItems_Menu('Raids');
+
     var raid_info = JSON.parse(document.getElementById('raid_info').textContent);
     var raid_attacks_info = JSON.parse(document.getElementById('raid_attacks_info').textContent.replace("NaN", null));
 
@@ -80,6 +79,21 @@
                 }
             ]
         })
+    }
+
+    function AtaquesFaltantes(){
+        let ataques_faltantes = raid_attacks_info.filter((item) => {
+            return item.attacks < item.total_attack_limit;
+        });
+
+        let msg = "";
+        ataques_faltantes.forEach((item) => {
+            msg += item.cel != null ? item.cel + " - " : "(no lo tengo) - ";
+            msg += item.name + " - " + item.attacks + "/" + item.total_attack_limit + "\n";
+        });
+
+        navigator.clipboard.writeText(msg);
+        alert("ataques faltantes copiados al portapapeles");
     }
 </script>
 
