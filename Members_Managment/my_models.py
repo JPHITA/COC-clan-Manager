@@ -98,14 +98,15 @@ class Member:
 
                 else:
                     memb = Member(
-                        row["tag"],
-                        row["name"],
-                        clan_tag,
-                        row["role"],
-                        None,
-                        True,
-                        datetime.now().strftime('%Y-%m-%d'),
-                        datetime.now().strftime('%Y-%m-%d')
+                        tag = row["tag"],
+                        name = row["name"],
+                        clan = clan_tag,
+                        role = row["role"],
+                        cel = None,
+                        comments = None,
+                        current_member = True,
+                        date_created = datetime.now().strftime('%Y-%m-%d'),
+                        date_updated = datetime.now().strftime('%Y-%m-%d')
                     )
                     
                     memb.save()
