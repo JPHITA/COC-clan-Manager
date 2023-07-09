@@ -1,5 +1,6 @@
 import pandas as pd
 from COC_API import COC_API
+from Members_Managment.my_models import Member
 
 class CWL:
 
@@ -17,18 +18,23 @@ class CWL:
         
         for wat_tag in war_tags:
             war_info = COC_API.CWL_specificwar_info(wat_tag)
-            
+            print(war_info["clan"]["name"], war_info["opponent"]["name"])
             if war_info["clan"]["tag"] == clan_tag or war_info["opponent"]["tag"] == clan_tag:
                 break
 
-        ths_clan = pd.DataFrame(war_info["clan"]["members"])
-        ths_clan = ths_clan[["mapPosition", "name", "townhallLevel"]]
-        ths_clan.set_index("mapPosition", inplace=True, drop=True)
+        Members_API = None
+        if war_info["clan"]["tag"] == clan_tag:
+            Members_API = pd.DataFrame(war_info["clan"]["members"])
+        else:
+            Members_API = pd.DataFrame(war_info["opponent"]["members"])
 
-        ths_opponent = pd.DataFrame(war_info["opponent"]["members"])
-        ths_opponent = ths_opponent[["mapPosition", "name", "townhallLevel"]]
-        ths_opponent.set_index("mapPosition", inplace=True, drop=True)
+        Members_API = Members_API[Members_API["attacks"].isna()]
 
-        print(ths_clan.index.sort_values(), ths_opponent.index.sort_values())
-        # print(pd.merge(ths_clan, ths_opponent, left_index=True, right_index=True, suffixes=("_clan", "_opponent")).sort_index())
-        # return pd.merge(ths_clan, ths_opponent, left_index=True, right_index=True, suffixes=("_clan", "_opponent")).sort_index()
+        Members_BD = Member.get_active_membersBD(clan_tag)
+
+        Members_API = Members_API.merge(Members_BD, how="left", on="tag", suffixes=("_API", "_BD"))
+        Members_API = Members_API[["name_API", "cel"]]
+        Members_API = Members_API.rename(columns={"name_API": "name"})
+        Members_API["cel"].fillna("no lo tengo", inplace=True)
+
+        return Members_API.to_dict("records")

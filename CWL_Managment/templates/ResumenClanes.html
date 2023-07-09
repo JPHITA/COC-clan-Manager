@@ -7,11 +7,13 @@
     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
         <h6 class="m-0 font-weight-bold text-primary">Resumen Clanes CWL</h6>
         <div class="dropdown no-arrow">
-            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false">
                 <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
             </a>
             <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
                 <a class="dropdown-item" href="/CWL/Refresh">Refrescar CWL</a>
+                <a class="dropdown-item" data-toggle="modal" data-target="#modal-ataques-faltantes" href="">Ataques faltantes</a>
             </div>
         </div>
     </div>
@@ -20,6 +22,28 @@
 
     </div>
 </div>
+
+<!-- Modal -->
+<div class="modal fade" id="modal-ataques-faltantes" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Seleccione la ronda de la CWL</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <div id="btns-ronda" class="btn-group" role="group" aria-label="Basic example">
+                
+              </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
 {% endblock %}
 
@@ -30,14 +54,24 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 {{ CWL_clans_summary|json_script:'CWL_clans_summary' }}
+{{ ronda_disp|json_script:'ronda_disp' }}
 
 <script>
     ActiveItems_Menu("Resumen-clanes")
 
-    window.onload = () => {
-        const CWL_clans_summary = JSON.parse(document.getElementById('CWL_clans_summary').textContent);
-        const CWL_clans = Object.keys(CWL_clans_summary);
+    const CWL_clans_summary = JSON.parse(document.getElementById('CWL_clans_summary').textContent);
+    const CWL_clans = Object.keys(CWL_clans_summary);
+    const ronda_disp = JSON.parse(document.getElementById('ronda_disp').textContent);
 
+    window.onload = () => {
+
+        crear_graficos_html()
+        load_data_graficos()
+        botones_rondas()
+
+    }
+
+    function crear_graficos_html() {
         //  añadir al html los graficos
         let container = document.getElementById('CWL-clans-container');
         let html = '';
@@ -59,7 +93,9 @@
         }
 
         container.innerHTML = html;
+    }
 
+    function load_data_graficos() {
         //  crear los graficos
         CWL_clans.forEach((clan, i) => {
             let clan_th = Object.keys(CWL_clans_summary[clan]).sort((a, b) => parseInt(a) - parseInt(b));
@@ -105,6 +141,43 @@
                 }
             });
         });
+    }
+
+    function botones_rondas(){
+        let btns_ronda = document.getElementById('btns-ronda');
+        let html = '';
+        ronda_disp.forEach((disp, i) => {
+            html += `
+                <button ${disp ? "" : "disabled"} type="button" class="btn btn-primary" onclick="get_ataques_faltantes(${i})">${i+1}</button>
+            `;
+        });
+        btns_ronda.innerHTML = html;
+    }
+
+    function get_ataques_faltantes(ronda){
+        fetch(`/CWL/InfoWar/${ronda}`, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        }).then(response => {
+            response.json().then(data => {
+                if (data.state == "ok") {
+                    
+                    let msg = "Faltan por atacar en CWL \n";
+                    data.CWL_ataques_faltantes.forEach(ataque => {
+                        msg += `@${ataque.cel} - ${ataque.name}\n`;
+                    })
+
+                    navigator.clipboard.writeText(msg).then(function() {
+                        alert("ataques faltantes copiados al portapapeles");
+                    });
+
+                }else{
+                    alert("error")
+                }
+            });
+        })
     }
 
 </script>

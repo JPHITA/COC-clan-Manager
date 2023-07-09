@@ -18,7 +18,9 @@
             </a>
             <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
                 <a class="dropdown-item" href="/ClanWar/RefreshClanWarInfo">Refrescar guerra de clanes</a>
+                {% if clanwarinfo.state == 'in_war' %}
                 <a class="dropdown-item" href="#">ataques faltantes</a>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -58,9 +60,6 @@
         let clanwar_info = JSON.parse(document.getElementById('clanwar_info').textContent.replaceAll("NaN", null));
         let clanwar_attacks_info = JSON.parse(document.getElementById('clanwar_attacks_info').textContent.replaceAll("NaN", null));
 
-        console.log(clanwar_info)
-        console.log(clanwar_attacks_info)
-
         if(clanwar_info.state == "in_war"){
             $("#tabla-ataques-clanwar").DataTable({
                 data: clanwar_attacks_info,
@@ -73,6 +72,8 @@
             });
         }
     }
+
+    // falta listar los ataques y hacer que me devuelva los ataques faltantes
 </script>
 
 {% endblock %}
