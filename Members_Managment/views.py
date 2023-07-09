@@ -7,7 +7,7 @@ from COC_API import COC_API
 from datetime import datetime
 
 def index(request):
-    request.session["clan_tag"] = "#LOPGJPOY"
+    request.session["clan_tag"] = "#L0PGJP0Y"
 
     if "clan_info" not in request.session:
         clan_info, clan_members = COC_API.get_clan_info_members(request.session["clan_tag"])
@@ -52,7 +52,7 @@ def editar_cel_coment_miembro(request):
     member.tag = tag
     member.cel = cel if cel != "" else None
     member.comments = coment if coment != "" else None
-    member.date_updated = datetime.now().strftime("%Y-%m-%d"),
+    member.date_updated = datetime.now().strftime('%Y-%m-%d')
 
     member.update(campos=["cel", "comments", "date_updated"])
 
@@ -80,7 +80,7 @@ def save_changes_history_member(request):
     member.tag = request.POST["tag"]
     member.cel = request.POST["cel"]
     member.comments = request.POST["comments"]
-    member.date_updated = datetime.now().strftime("%Y-%m-%d"),
+    member.date_updated = datetime.now().strftime('%Y-%m-%d')
 
     status = "ok" if member.update(campos=["cel", "comments", "date_updated"]) == True else "error"
 

@@ -23,6 +23,6 @@ def refresh_raid_info(request):
 
     request.session["raid_info"] = raid_info
     request.session["raid_attacks_info"] = raid_attacks_info.to_dict("records")
-
+    print(request.session["raid_attacks_info"])
 
     return redirect("/Raid/ViewAttacks")

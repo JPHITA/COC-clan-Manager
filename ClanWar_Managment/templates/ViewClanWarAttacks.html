@@ -1,0 +1,78 @@
+{% extends 'blank.html' %}
+
+{% block styles %}
+
+<link href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" rel="stylesheet">
+
+{% endblock %}
+
+{% block content %}
+
+<div class="card shadow mb-4">
+    <!-- Card Header - Dropdown -->
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <h6 class="m-0 font-weight-bold text-primary">Ataques guerra de clanes</h6>
+        <div class="dropdown no-arrow">
+            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+                <a class="dropdown-item" href="/ClanWar/RefreshClanWarInfo">Refrescar guerra de clanes</a>
+                <a class="dropdown-item" href="#">ataques faltantes</a>
+            </div>
+        </div>
+    </div>
+    <!-- Card Body -->
+    <div class="card-body" id="CWL-clans-container">
+
+        {% if clanwarinfo.state == 'in_war' %}
+        <div class="row">
+            <div class="col">
+                <table id="tabla-ataques-clanwar" class="table table-bordered">
+
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-danger" role="alert">
+                <h4 class="alert-heading">No hay datos</h4>
+                <p>Actualmente el clan no se encuenta en Guerra de clanes</p>
+            </div>
+        {% endif %}
+
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+
+{{clanwar_info|json_script:"clanwar_info"}}
+{{clanwar_attacks_info|json_script:"clanwar_attacks_info"}}
+
+<script>
+    ActiveItems_Menu("ClanWars")
+
+    window.onload = () => {
+        let clanwar_info = JSON.parse(document.getElementById('clanwar_info').textContent.replaceAll("NaN", null));
+        let clanwar_attacks_info = JSON.parse(document.getElementById('clanwar_attacks_info').textContent.replaceAll("NaN", null));
+
+        console.log(clanwar_info)
+        console.log(clanwar_attacks_info)
+
+        if(clanwar_info.state == "in_war"){
+            $("#tabla-ataques-clanwar").DataTable({
+                data: clanwar_attacks_info,
+                columns: [
+                    { title: "Tag", data: "tag" },
+                    { title: "Nombre", data: "name" },
+                    { title: "Ataques", data: "attacks" },
+                    { title: "Celular", data: "cel" },
+                ],
+            });
+        }
+    }
+</script>
+
+{% endblock %}

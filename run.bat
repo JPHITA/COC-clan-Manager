@@ -1,0 +1,1 @@
+venv\Scripts\python.exe manage.py runserver | start chrome http://localhost:8000

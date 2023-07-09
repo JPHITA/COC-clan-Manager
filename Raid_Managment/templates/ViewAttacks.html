@@ -10,7 +10,7 @@
 <div class="card shadow mb-4">
     <!-- Card Header - Dropdown -->
     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-        <h6 class="m-0 font-weight-bold text-primary">Dropdown Card Example</h6>
+        <h6 class="m-0 font-weight-bold text-primary">Ataques del raid</h6>
         <div class="dropdown no-arrow">
             <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown"
                 aria-haspopup="true" aria-expanded="false">
@@ -50,8 +50,8 @@
 <script>
     ActiveItems_Menu('Raids');
 
-    var raid_info = JSON.parse(document.getElementById('raid_info').textContent);
-    var raid_attacks_info = JSON.parse(document.getElementById('raid_attacks_info').textContent.replace("NaN", null));
+    var raid_info = JSON.parse(document.getElementById('raid_info').textContent.replaceAll("NaN", null));
+    var raid_attacks_info = JSON.parse(document.getElementById('raid_attacks_info').textContent.replaceAll("NaN", null));
 
     window.onload = () => {
         $("#tabla-raid-attacks").DataTable({
@@ -63,7 +63,7 @@
                 },
                 {
                     title: 'Nombre',
-                    data: 'name'
+                    data: 'name_BD'
                 },
                 {
                     title: 'ataques',
@@ -89,7 +89,7 @@
         let msg = "";
         ataques_faltantes.forEach((item) => {
             msg += item.cel != null ? item.cel + " - " : "(no lo tengo) - ";
-            msg += item.name + " - " + item.attacks + "/" + item.total_attack_limit + "\n";
+            msg += item.name_BD + " - " + item.attacks + "/" + item.total_attack_limit + "\n";
         });
 
         navigator.clipboard.writeText(msg);

@@ -68,7 +68,7 @@ class Member:
                 tag = row["tag"],
                 name = row["name_API"],
                 role = row["role_API"],
-                date_updated=datetime.now().strftime("%Y-%m-%d")
+                date_updated=datetime.now().strftime('%Y-%m-%d')
             )
             member_update.update(campos=["name", "role", "date_updated"])
 
@@ -92,7 +92,7 @@ class Member:
                         name = row["name"],
                         role = row["role"],
                         current_member = True,
-                        date_updated = datetime.now().strftime("%Y-%m-%d")
+                        date_updated = datetime.now().strftime('%Y-%m-%d')
                     )
                     memb.update(campos=["name", "role", "current_member", "date_updated"])
 
@@ -104,8 +104,9 @@ class Member:
                         row["role"],
                         None,
                         True,
-                        datetime.now().strftime("%Y-%m-%d"),
-                        datetime.now().strftime("%Y-%m-%d"))
+                        datetime.now().strftime('%Y-%m-%d'),
+                        datetime.now().strftime('%Y-%m-%d')
+                    )
                     
                     memb.save()
 
@@ -116,7 +117,7 @@ class Member:
             member_update = Member(
                 tag = row["tag"],
                 current_member = False,
-                date_updated = datetime.now().strftime("%Y-%m-%d")
+                date_updated = datetime.now().strftime('%Y-%m-%d')
             )
             member_update.update(campos=["current_member", "date_updated"])
                 
@@ -147,7 +148,7 @@ class Member:
         
         sql = sql[:-1] + " WHERE tag = %s;"
         params.append(self.tag)
-
+        print(sql, params)
         with connection.cursor() as cursor:
             cursor.execute(sql, params)
 
