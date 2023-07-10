@@ -10,7 +10,10 @@ def index(request):
     request.session["clan_tag"] = "#L0PGJP0Y"
 
     if "clan_info" not in request.session:
-        clan_info, clan_members = COC_API.get_clan_info_members(request.session["clan_tag"])
+        success, msg, clan_info, clan_members = COC_API.get_clan_info_members(request.session["clan_tag"])
+
+        if not success:
+            return redirect("/Config/Constantes/"+msg)
 
         # guardar en la session la informacion del clan y los miembros
         request.session["clan_info"] = clan_info
@@ -19,8 +22,10 @@ def index(request):
     return render(request, "index.html", {"clan_info": request.session["clan_info"]})
 
 def refresh_info(request):
-    # se obtiene la informacion de los miembros del clan
-    clan_info, clan_members = COC_API.get_clan_info_members(request.session["clan_tag"])
+    success, msg, clan_info, clan_members = COC_API.get_clan_info_members(request.session["clan_tag"])
+
+    if not success:
+        return redirect("/Config/Constantes/"+msg)
 
     # guardar en la session la informacion del clan y los miembros
     request.session["clan_info"] = clan_info

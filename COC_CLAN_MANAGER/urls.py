@@ -24,4 +24,5 @@ urlpatterns = [
     path("", include("Raid_Managment.urls")),
     path("", include("CWL_Managment.urls")),
     path("", include("ClanWar_Managment.urls")),
+    path("", include("Config.urls")),
 ]

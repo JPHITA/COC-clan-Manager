@@ -1,0 +1,143 @@
+{% extends 'blank.html' %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col">
+
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Basic Card Example</h6>
+            </div>
+            <div class="card-body">
+
+                <div class="row justify-content-end" style="margin-bottom: 10px;">
+                    <div class="col-1">
+                        <button type="button" class="btn btn-success" onclick="modal_registar()">+</button>
+                    </div>
+                </div>
+
+
+                <div class="row">
+                    <div class="col">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>id</th>
+                                    <th>Nombre</th>
+                                    <th>Valor</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for constante in cons %}
+                                <tr>
+                                    <td>{{ constante.id }}</td>
+                                    <td>{{ constante.nombre }}</td>
+                                    <td>{{ constante.valor|truncatechars:25 }}</td>
+                                    <td style="text-align: right;">
+                                        <button type="button" class="btn btn-primary" onclick="modal_editar('{{constante.id}}', '{{constante.nombre}}', '{{constante.valor}}')">Editar</button>
+                                        <button type="button" class="btn btn-danger" onclick="eliminar_cons('{{constante.id}}')">Eliminar</button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+<!-- modal -->
+<div class="modal" tabindex="-1" role="dialog" id="registrar_cons">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Constante</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="/Config/Constantes" method="post">
+                <div class="modal-body">
+
+
+                    {% csrf_token %}
+                    <input type="hidden" name="id_cons">
+
+                    {% for field in form %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                    </div>
+                    {% endfor %}
+
+
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Guardar</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script>
+    ActiveItems_Menu("Constantes");
+
+    window.onload = () => {
+        document.querySelectorAll("input,textarea,select").forEach((element) => {
+            element.classList.add("form-control")
+        });
+
+        {% if msg_error %}
+        alert("{{msg_error}}");
+        {% endif %}
+
+    }
+
+    let modal = document.getElementById("registrar_cons");
+
+    function modal_registar(){
+        modal.querySelectorAll("input,textarea,select").forEach((element) => {
+            if (element.name != "csrfmiddlewaretoken") {
+                element.value = "";
+            }
+        });
+
+        $(modal).modal("show");
+    }
+
+    function modal_editar(id, nombre, valor){
+        id = parseInt(id);
+        nombre = nombre.toString();
+
+        modal.querySelector("input[name='id_cons']").value = id;
+        modal.querySelector("input[name='nombre']").value = nombre;
+        modal.querySelector("textarea[name='valor']").value = valor;
+
+        $(modal).modal("show");
+    }
+
+    function eliminar_cons(id){
+        id = parseInt(id);
+
+        if (confirm("¿Desea eliminar la constante?")) {
+            window.location.href = "/Config/Constantes/" + id;
+        }
+    }
+</script>
+
+{% endblock %}

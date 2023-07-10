@@ -7,7 +7,10 @@ from ClanWar_Managment.my_models import ClanWar
 def viewattacks(request):
     
     if "clanwar_info" not in request.session:
-        clanwar_info, clanwar_attacks_info = ClanWar.get_ClanWar_info(request.session["clan_tag"])
+        success, msg, clanwar_info, clanwar_attacks_info = ClanWar.get_ClanWar_info(request.session["clan_tag"])
+
+        if not success:
+            return redirect("/Config/Constantes/"+msg)
 
         request.session["clanwar_info"] = clanwar_info
         request.session["clanwar_attacks_info"] = clanwar_attacks_info
@@ -16,7 +19,10 @@ def viewattacks(request):
 
 
 def refresh_clanwar_info(request):
-    clanwar_info, clanwar_attacks_info = ClanWar.get_ClanWar_info(request.session["clan_tag"])
+    success, msg, clanwar_info, clanwar_attacks_info = ClanWar.get_ClanWar_info(request.session["clan_tag"])
+
+    if not success:
+        return redirect("/Config/Constantes/"+msg)
 
     request.session["clanwar_info"] = clanwar_info
     request.session["clanwar_attacks_info"] = clanwar_attacks_info

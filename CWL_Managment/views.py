@@ -10,7 +10,12 @@ from CWL_Managment.my_models import CWL
 def ResumenClanes(request):
 
     if "CWL_info" not in request.session:
-        request.session["CWL_info"] = COC_API.get_CWL_info(request.session["clan_tag"])
+        success, msg, CWL_info = COC_API.get_CWL_info(request.session["clan_tag"])
+
+        if not success:
+            return redirect("/Config/Constantes/"+msg)
+
+        request.session["CWL_info"] = CWL_info
     
     if request.session["CWL_info"]["state"] != "inWar":
         return render(request, "ResumenClanes.html", {"state": "not_in_war"})
@@ -38,12 +43,17 @@ def GuerraEspecifica(request):
 def Info_GuerraEspecifica(request, round):
     
     war_tags =  request.session["CWL_info"]["rounds"][round]["warTags"]
-    CWL_ataques_faltantes = CWL.Info_GuerraEspecifica(request.session["clan_tag"], war_tags)
+    state, msg, CWL_ataques_faltantes = CWL.Info_GuerraEspecifica(request.session["clan_tag"], war_tags)
 
-    return JsonResponse({"state": "ok", "CWL_ataques_faltantes": CWL_ataques_faltantes})
+    return JsonResponse({"state": state, "msg": msg, "CWL_ataques_faltantes": CWL_ataques_faltantes})
 
 
 def Refresh(request):
-    request.session["CWL_info"] = COC_API.get_CWL_info(request.session["clan_tag"])
+    success, msg, CWL_info = COC_API.get_CWL_info(request.session["clan_tag"])
+
+    if not success:
+        return redirect("/Config/Constantes/"+msg)
+
+    request.session["CWL_info"] = CWL_info
 
     return redirect("/CWL/ClansSummary")

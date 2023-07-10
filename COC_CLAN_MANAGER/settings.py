@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'Raid_Managment',
     'CWL_Managment',
     'ClanWar_Managment',
+    'Config',
 ]
 
 MIDDLEWARE = [

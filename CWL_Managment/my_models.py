@@ -17,8 +17,11 @@ class CWL:
     def Info_GuerraEspecifica(cls, clan_tag, war_tags):
         
         for wat_tag in war_tags:
-            war_info = COC_API.CWL_specificwar_info(wat_tag)
-            print(war_info["clan"]["name"], war_info["opponent"]["name"])
+            success, msg, war_info = COC_API.CWL_specificwar_info(wat_tag)
+
+            if not success:
+                return False, msg, None
+
             if war_info["clan"]["tag"] == clan_tag or war_info["opponent"]["tag"] == clan_tag:
                 break
 
@@ -37,4 +40,4 @@ class CWL:
         Members_API = Members_API.rename(columns={"name_API": "name"})
         Members_API["cel"].fillna("no lo tengo", inplace=True)
 
-        return Members_API.to_dict("records")
+        return True, "", Members_API.to_dict("records")

@@ -10,7 +10,10 @@ from Raid_Managment.my_models import Raid
 def viewattacks(request):
 
     if "raid_info" not in request.session:
-        raid_info, raid_attacks_info = Raid.get_last_raid_info(request.session["clan_tag"])
+        success, msg, raid_info, raid_attacks_info = Raid.get_last_raid_info(request.session["clan_tag"])
+
+        if not success:
+            return redirect("/Config/Constantes/"+msg)
 
         request.session["raid_info"] = raid_info
         request.session["raid_attacks_info"] = raid_attacks_info.to_dict("records")
@@ -19,10 +22,13 @@ def viewattacks(request):
 
 
 def refresh_raid_info(request):
-    raid_info, raid_attacks_info = Raid.get_last_raid_info(request.session["clan_tag"])
+    success, msg, raid_info, raid_attacks_info = Raid.get_last_raid_info(request.session["clan_tag"])
+
+    if not success:
+        return redirect("/Config/Constantes/"+msg)
 
     request.session["raid_info"] = raid_info
     request.session["raid_attacks_info"] = raid_attacks_info.to_dict("records")
-    print(request.session["raid_attacks_info"])
+    
 
     return redirect("/Raid/ViewAttacks")

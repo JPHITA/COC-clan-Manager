@@ -86,7 +86,7 @@
             return item.attacks < item.total_attack_limit;
         });
 
-        let msg = "Faltan atacar en raid: \n";
+        let msg = "Faltan atacar en la capital: \n";
         ataques_faltantes.forEach((item) => {
             msg += item.cel != null ? "@" + item.cel + " - " : "(no lo tengo) - ";
             msg += item.name_BD + " - " + item.attacks + "/" + item.total_attack_limit + "\n";
