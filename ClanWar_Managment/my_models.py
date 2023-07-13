@@ -10,10 +10,10 @@ class ClanWar:
         
         clanwar_members_API = None
         if success:
-            if clanwar_info["state"] == "in_war":
+            if clanwar_info["state"] == "inWar":
                 clanwar_members_API = pd.DataFrame(clanwar_info["clan"]["members"])
-                
-                clanwar_members_API["attacks"] = clanwar_members_API["attacks"].apply(len)
+                print(clanwar_members_API)
+                clanwar_members_API["attacks"] = clanwar_members_API["attacks"].apply(lambda x: 0 if pd.isna(x) else len(x))
                 clanwar_members_API = clanwar_members_API[["tag", "name", "attacks"]]
 
                 # combinar con la base de datos de miembros

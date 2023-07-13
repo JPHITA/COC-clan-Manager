@@ -18,8 +18,8 @@
             </a>
             <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
                 <a class="dropdown-item" href="/ClanWar/RefreshClanWarInfo">Refrescar guerra de clanes</a>
-                {% if clanwarinfo.state == 'in_war' %}
-                <a class="dropdown-item" href="#">ataques faltantes</a>
+                {% if clanwar_info.state == 'inWar' %}
+                <a class="dropdown-item" href="#" onclick="ataques_faltantes()">ataques faltantes</a>
                 {% endif %}
             </div>
         </div>
@@ -27,7 +27,7 @@
     <!-- Card Body -->
     <div class="card-body" id="CWL-clans-container">
 
-        {% if clanwarinfo.state == 'in_war' %}
+        {% if clanwar_info.state == 'inWar' %}
         <div class="row">
             <div class="col">
                 <table id="tabla-ataques-clanwar" class="table table-bordered">
@@ -56,11 +56,12 @@
 <script>
     ActiveItems_Menu("ClanWars")
 
-    window.onload = () => {
-        let clanwar_info = JSON.parse(document.getElementById('clanwar_info').textContent.replaceAll("NaN", null));
-        let clanwar_attacks_info = JSON.parse(document.getElementById('clanwar_attacks_info').textContent.replaceAll("NaN", null));
+    var clanwar_info = JSON.parse(document.getElementById('clanwar_info').textContent.replaceAll("NaN", null));
+    var clanwar_attacks_info = JSON.parse(document.getElementById('clanwar_attacks_info').textContent.replaceAll("NaN", null));
 
-        if(clanwar_info.state == "in_war"){
+    window.onload = () => {
+        
+        if(clanwar_info.state == "inWar"){
             $("#tabla-ataques-clanwar").DataTable({
                 data: clanwar_attacks_info,
                 columns: [
@@ -73,7 +74,18 @@
         }
     }
 
-    // falta listar los ataques y hacer que me devuelva los ataques faltantes
+    function ataques_faltantes(){
+        let ataques_f = clanwar_attacks_info.filter(item => item.attacks < 2 )
+
+        let msg = "faltan por atacar en guerra: \n";
+        ataques_f.forEach(e => {
+            msg += `${e.cel == null? "No lo tengo": "@"+e.cel} - ${e.name} - ${e.attacks}/2 \n`
+        });
+
+        navigator.clipboard.writeText(msg).then(function() {
+            alert("copiado al portapapeles");
+        });
+    }
 </script>
 
 {% endblock %}
