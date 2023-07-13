@@ -75,7 +75,7 @@
     }
 
     function ataques_faltantes(){
-        let ataques_f = clanwar_attacks_info.filter(item => item.attacks < 2 )
+        let ataques_f = clanwar_attacks_info.filter(item => item.attacks < 2 );
 
         let msg = "faltan por atacar en guerra: \n";
         ataques_f.forEach(e => {
