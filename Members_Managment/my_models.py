@@ -149,7 +149,7 @@ class Member:
         
         sql = sql[:-1] + " WHERE tag = %s;"
         params.append(self.tag)
-        print(sql, params)
+
         with connection.cursor() as cursor:
             cursor.execute(sql, params)
 
