@@ -17,7 +17,7 @@ def ResumenClanes(request):
 
         request.session["CWL_info"] = CWL_info
     
-    if request.session["CWL_info"]["state"] != "inWar":
+    if request.session["CWL_info"]["state"] not in ["inWar", "preparation"]:
         return render(request, "ResumenClanes.html", {"state": "not_in_war"})
     
     else:
