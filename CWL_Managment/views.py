@@ -45,6 +45,8 @@ def Info_GuerraEspecifica(request, round):
     war_tags =  request.session["CWL_info"]["rounds"][round]["warTags"]
     state, msg, CWL_ataques_faltantes = CWL.Info_GuerraEspecifica(request.session["clan_tag"], war_tags)
 
+    state = "ok" if state else "error"
+
     return JsonResponse({"state": state, "msg": msg, "CWL_ataques_faltantes": CWL_ataques_faltantes})
 
 
