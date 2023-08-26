@@ -30,7 +30,8 @@ class Member:
         return cls.membersBD
     
     @classmethod
-    def get_historical_memberBD(cls, tag):
+    def get_historical_memberBD(cls, tag_name):
+        tag_name = tag_name.upper()
         sql = """
             SELECT
                 tag, name, clan, role, cel, comments, date_created, date_updated,
@@ -38,10 +39,12 @@ class Member:
             FROM
                 Members_Managment_member
             WHERE
-                tag = %s;"""
+                UPPER(tag) = %s
+            OR
+                UPPER(name) LIKE %s;"""
 
         with connection.cursor() as cursor:
-            cursor.execute(sql, [tag])
+            cursor.execute(sql, [tag_name, f"%{tag_name}%"])
             member = cursor.fetchone()
             cols = [col[0] for col in cursor.description]
 
