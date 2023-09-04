@@ -16,8 +16,11 @@ class CWL:
     @classmethod
     def Info_GuerraEspecifica(cls, clan_tag, war_tags):
         
-        for wat_tag in war_tags:
-            success, msg, war_info = COC_API.CWL_specificwar_info(wat_tag)
+        for war_tag in war_tags:
+            success, msg, war_info = COC_API.CWL_specificwar_info(war_tag)
+
+            if war_info["state"] != "inWar":
+                return False, "La guerra no está en curso", None
 
             if not success:
                 return False, msg, None
