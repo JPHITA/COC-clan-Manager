@@ -29,13 +29,14 @@
                 <h6 class="m-0 font-weight-bold text-primary">Miembros</h6>
 
                 <div class="dropdown no-arrow">
-                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
                         <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
                         aria-labelledby="dropdownMenuLink">
                         <a class="dropdown-item" href="/Members/Refresh">Actualizar Miembros</a>
+                        <a class="dropdown-item" href="#" onclick="modal_war_status.show()">Preferencias de guerra</a>
                     </div>
                 </div>
             </div>
@@ -96,7 +97,8 @@
                             <div class="col">
                                 <div class="form-group">
                                     <label for="comments-editar-miembro">Comentarios</label>
-                                    <textarea class="form-control" id="comments-editar-miembro" name="comments" rows="5"></textarea>
+                                    <textarea class="form-control" id="comments-editar-miembro" name="comments"
+                                        rows="5"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -113,6 +115,61 @@
     </div>
 </div>
 
+<div class="modal fade" id="war-status" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Preferencias de guerra</h1>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <!-- alerta para cuando se solicite war preferences -->
+                <div id="alert-warpreference" class="alert alert-primary" role="alert" style="display: none; text-align: center;">
+                    Listo!, en cuanto se termine de procesar la información se le alertara.
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="tipo-preferencia" id="todos" checked>
+                            <label class="form-check-label" for="todos">
+                                todos
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="tipo-preferencia" id="in">
+                            <label class="form-check-label" for="in">
+                                verdes
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="tipo-preferencia" id="out">
+                            <label class="form-check-label" for="out">
+                                rojos
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <textarea class="form-control" id="result-war-preference" cols="30" rows="10"
+                            readonly></textarea>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="modal_war_status.hide()">Cerrar</button>
+                <button type="button" class="btn btn-primary" onclick="get_war_status()">Consultar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
 
 
@@ -123,8 +180,10 @@
 {{ members|json_script:"members-tag" }}
 
 <script>
-    var members = undefined
-    var modal_editar_miembro = $('#editar-miembro');
+    let members = undefined
+    const modal_editar_miembro = new bootstrap.Modal(document.getElementById('editar-miembro'));
+    const modal_war_status = new bootstrap.Modal(document.getElementById('war-status'));
+    const alert_warpreferences = document.getElementById('alert-warpreference');
 
     window.onload = function () {
         members = JSON.parse(document.getElementById('members-tag').textContent);
@@ -170,6 +229,36 @@
         document.getElementById('comments-editar-miembro').value = member.comments;
 
         modal_editar_miembro.modal("show");
+    }
+
+    async function get_war_status() {
+        const tipo = document.querySelector('input[name="tipo-preferencia"]:checked').id;
+        const result_warprefence = document.getElementById('result-war-preference');
+
+        result_warprefence.value = "";
+        alert_warpreferences.style.display = "block";
+        setTimeout(() => alert_warpreferences.style.display = "none", 5000);
+
+        let result = await fetch("/Members/WarStatus", {
+            method: 'GET',
+            headers: {
+                responseType: 'json',
+            }
+        })
+        result = await result.json()
+
+        if (tipo != "todos") {
+            result.members = result.members.filter(member => member.warPreference == tipo);
+        }
+
+        const ESTADOS = { "in": "verde", "out": "rojo" };
+        let texto = tipo == "todos" ? "escudos:\n" : "miembros con escudo en " + ESTADOS[tipo] + ":\n";
+        result.members.forEach(member => {
+            texto += `@${member.cel} ${member.name}` + (tipo == "todos" ? ` ${ESTADOS[member.warPreference]}\n` : "\n");
+        });
+
+        result_warprefence.value = texto;
+        alert("se copio la información en el portapapeles");
     }
 
     ActiveItems_Menu("Miembros-activos");

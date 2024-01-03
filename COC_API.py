@@ -27,6 +27,18 @@ class COC_API:
 
         return True, "", clan_info, clan_members
     
+    @classmethod
+    def get_player_info(cls, player_tag):
+        player_tag = player_tag.replace("#", "%23")
+
+        res = requests.get(f"https://api.clashofclans.com/v1/players/{player_tag}", headers={"Authorization": f"Bearer {cls.token}"})
+        res = res.json()
+
+        if "reason" in res:
+            return False, "Error en la API de Clash of Clans: " + res.__str__(), None
+
+        return True, "", res
+    
 
     @classmethod
     def get_raid_info(cls, clan_tag, limit=1):

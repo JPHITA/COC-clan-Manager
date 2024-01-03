@@ -90,3 +90,21 @@ def save_changes_history_member(request):
     status = "ok" if member.update(campos=["cel", "comments", "date_updated"]) == True else "error"
 
     return JsonResponse({"status": status})
+
+
+def get_war_status(request):
+    members = Member.get_active_membersBD(request.session["clan_tag"])
+    members["cel"].fillna("no lo tengo", inplace=True)
+
+    def get_war_status(tag):
+        success, msg, player_info = COC_API.get_player_info(tag)
+
+        if not success:
+            return redirect("/Config/Constantes/"+msg)
+        
+        return player_info["warPreference"]
+
+    members['warPreference'] = members['tag'].apply(get_war_status)
+    members = members[["cel", "name", "warPreference"]]
+
+    return JsonResponse({"status": "ok", "members": members.to_dict("records")})
