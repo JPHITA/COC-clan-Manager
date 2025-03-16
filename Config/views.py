@@ -37,4 +37,4 @@ def ViewConstantes(request, id_delete=None, msg_error=None):
     
     form = ConstantesForm()
     cons = Constantes.objects.all()
-    return render(request, 'Constantes.html', {'form': form, 'cons': cons, 'msg_error': msg_error})
+    return render(request, 'constantes.html', {'form': form, 'cons': cons, 'msg_error': msg_error})
